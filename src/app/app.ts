@@ -1,12 +1,12 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+
+import { AtmShellComponent } from './atm-shell/atm-shell.component';
+import { ToastHostComponent } from './core/toast-host.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [AtmShellComponent, ToastHostComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
-  protected readonly title = signal('01-frontend');
-}
+export class App {}

@@ -1,0 +1,183 @@
+<div class="atm">
+  <header class="atm__header">
+    <div class="atm__profile" aria-hidden="true">
+      <svg class="atm__profile-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="22" stroke="currentColor" stroke-width="2" opacity="0.35" />
+        <circle cx="24" cy="19" r="7" fill="currentColor" opacity="0.9" />
+        <path
+          d="M12 38c2.5-6 8.5-9 12-9s9.5 3 12 9"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          opacity="0.85"
+        />
+      </svg>
+    </div>
+    <div class="atm__headline">
+      <p class="atm__eyebrow">Welcome</p>
+      <h1 class="atm__title">ATM Console</h1>
+      <div class="atm__balance-row" aria-live="polite">
+        @if (balanceLoading()) {
+          <span class="atm__balance atm__balance--muted">Fetching balance…</span>
+        } @else if (balanceRevealed()) {
+          <span class="atm__balance-label">Available balance</span>
+          <span class="atm__balance">{{ balance() | number: '1.2-2' }}</span>
+          <div class="atm__balance-actions">
+            <button type="button" class="atm__text-btn" (click)="hideBalance()" aria-label="Hide balance">
+              Hide
+            </button>
+            <button
+              type="button"
+              class="atm__text-btn"
+              (click)="checkAvailableBalance()"
+              [disabled]="balanceLoading()"
+              aria-label="Refresh balance from server"
+            >
+              Refresh
+            </button>
+          </div>
+        } @else {
+          <span class="atm__balance-masked" aria-hidden="true">••••••</span>
+          <span class="atm__balance-hint">Balance is not shown until you request it.</span>
+          <button
+            type="button"
+            class="atm__balance-fetch"
+            (click)="checkAvailableBalance()"
+            [disabled]="balanceLoading()"
+            aria-label="Check available balance"
+          >
+            Check available balance
+          </button>
+        }
+      </div>
+    </div>
+  </header>
+
+  <section class="atm__actions" aria-label="Main actions">
+    <button type="button" class="atm__action atm__action--deposit" (click)="openDeposit()">
+      <span class="atm__action-glow" aria-hidden="true"></span>
+      <span class="atm__action-label">Deposit</span>
+      <span class="atm__action-hint">Add funds</span>
+    </button>
+    <button type="button" class="atm__action atm__action--withdraw" (click)="openWithdraw()">
+      <span class="atm__action-glow" aria-hidden="true"></span>
+      <span class="atm__action-label">Withdraw</span>
+      <span class="atm__action-hint">Cash out</span>
+    </button>
+    <button type="button" class="atm__action atm__action--history" (click)="openHistory()">
+      <span class="atm__action-glow" aria-hidden="true"></span>
+      <span class="atm__action-label">History</span>
+      <span class="atm__action-hint">Transactions</span>
+    </button>
+  </section>
+
+  @if (activePanel() !== 'none') {
+    <div class="atm__overlay" role="presentation" (click)="closePanel()"></div>
+  }
+
+  @if (activePanel() === 'deposit') {
+    <div class="atm__panel atm__panel--enter" role="dialog" aria-modal="true" aria-labelledby="deposit-title">
+      <div class="atm__panel-inner">
+        <div class="atm__panel-head">
+          <h2 id="deposit-title" class="atm__panel-title">Deposit</h2>
+          <button type="button" class="atm__panel-x" (click)="closePanel()" aria-label="Close">×</button>
+        </div>
+        <p class="atm__panel-desc">Enter the amount to credit to your account.</p>
+        <label class="atm__field">
+          <span class="atm__field-label">Amount</span>
+          <input
+            class="atm__input"
+            type="number"
+            min="0"
+            step="0.01"
+            inputmode="decimal"
+            [value]="amountDraft()"
+            (input)="amountDraft.set($any($event.target).value)"
+            placeholder="0.00"
+          />
+        </label>
+        <div class="atm__panel-actions">
+          <button type="button" class="atm__btn atm__btn--ghost" (click)="closePanel()">Cancel</button>
+          <button
+            type="button"
+            class="atm__btn atm__btn--primary"
+            (click)="submitDeposit()"
+            [disabled]="submitting()"
+          >
+            @if (submitting()) {
+              <span>Submitting…</span>
+            } @else {
+              <span>Submit</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (activePanel() === 'withdraw') {
+    <div class="atm__panel atm__panel--enter" role="dialog" aria-modal="true" aria-labelledby="withdraw-title">
+      <div class="atm__panel-inner">
+        <div class="atm__panel-head">
+          <h2 id="withdraw-title" class="atm__panel-title">Withdraw</h2>
+          <button type="button" class="atm__panel-x" (click)="closePanel()" aria-label="Close">×</button>
+        </div>
+        <p class="atm__panel-desc">Enter the amount to withdraw from your account.</p>
+        <label class="atm__field">
+          <span class="atm__field-label">Amount</span>
+          <input
+            class="atm__input"
+            type="number"
+            min="0"
+            step="0.01"
+            inputmode="decimal"
+            [value]="amountDraft()"
+            (input)="amountDraft.set($any($event.target).value)"
+            placeholder="0.00"
+          />
+        </label>
+        <div class="atm__panel-actions">
+          <button type="button" class="atm__btn atm__btn--ghost" (click)="closePanel()">Cancel</button>
+          <button
+            type="button"
+            class="atm__btn atm__btn--primary"
+            (click)="submitWithdraw()"
+            [disabled]="submitting()"
+          >
+            @if (submitting()) {
+              <span>Submitting…</span>
+            } @else {
+              <span>Submit</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (activePanel() === 'history') {
+    <div class="atm__panel atm__panel--wide atm__panel--enter" role="dialog" aria-modal="true" aria-labelledby="history-title">
+      <div class="atm__panel-inner">
+        <div class="atm__panel-head">
+          <h2 id="history-title" class="atm__panel-title">Transaction history</h2>
+          <button type="button" class="atm__panel-x" (click)="closePanel()" aria-label="Close">×</button>
+        </div>
+        @if (historyLoading()) {
+          <p class="atm__panel-desc">Loading transactions…</p>
+        } @else if (transactions().length === 0) {
+          <p class="atm__empty">No transactions yet. Deposits and withdrawals will appear here.</p>
+        } @else {
+          <ul class="atm__list">
+            @for (tx of transactions(); track $index; let i = $index) {
+              <li class="atm__row" [style.animation-delay.ms]="i * 45">
+                <span class="atm__row-type">{{ tx.type }}</span>
+                <span class="atm__row-amt">{{ tx.amount | number: '1.2-2' }}</span>
+                <span class="atm__row-time">{{ tx.t_time | date: 'medium' }}</span>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    </div>
+  }
+</div>

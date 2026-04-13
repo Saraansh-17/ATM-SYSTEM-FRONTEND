@@ -1,0 +1,552 @@
+:host {
+  display: block;
+}
+
+.atm {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+/* Sit above the modal overlay so balance / Check balance stay visible while Deposit etc. are open. */
+.atm__header {
+  position: relative;
+  z-index: 805;
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  margin-bottom: 2rem;
+  animation: fade-rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.atm__profile {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--atm-accent);
+  background: radial-gradient(
+    circle at 30% 25%,
+    color-mix(in srgb, var(--atm-accent) 35%, transparent),
+    rgb(12 18 24 / 0.85)
+  );
+  border: 1px solid color-mix(in srgb, var(--atm-accent) 40%, transparent);
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.04) inset,
+    0 12px 32px rgb(0 0 0 / 0.35);
+  flex-shrink: 0;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease;
+}
+
+.atm__profile:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.06) inset,
+    0 18px 40px rgb(0 0 0 / 0.45);
+}
+
+.atm__profile-icon {
+  width: 2.35rem;
+  height: 2.35rem;
+}
+
+.atm__headline {
+  min-width: 0;
+}
+
+.atm__eyebrow {
+  margin: 0 0 0.2rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--atm-muted);
+}
+
+.atm__title {
+  margin: 0 0 0.5rem;
+  font-family: var(--atm-font-display);
+  font-weight: 600;
+  font-size: clamp(1.65rem, 4vw, 2rem);
+  letter-spacing: -0.03em;
+  color: var(--atm-text);
+}
+
+.atm__balance-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.atm__balance-label {
+  font-size: 0.8rem;
+  color: var(--atm-muted);
+}
+
+.atm__balance {
+  font-family: var(--atm-font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--atm-gold);
+  text-shadow: 0 0 24px color-mix(in srgb, var(--atm-gold) 35%, transparent);
+}
+
+.atm__balance--muted {
+  color: var(--atm-muted);
+  font-size: 0.95rem;
+  text-shadow: none;
+}
+
+.atm__balance-masked {
+  font-family: var(--atm-font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--atm-muted);
+  user-select: none;
+}
+
+.atm__balance-hint {
+  flex: 1 1 100%;
+  font-size: 0.8rem;
+  color: var(--atm-muted);
+  line-height: 1.35;
+  margin: 0;
+}
+
+.atm__balance-fetch {
+  flex: 1 1 auto;
+  margin-top: 0.35rem;
+  padding: 0.55rem 1rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--atm-accent) 45%, transparent);
+  background: color-mix(in srgb, var(--atm-accent) 14%, rgb(10 16 22 / 0.9));
+  color: var(--atm-text);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.atm__balance-fetch:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--atm-accent) 65%, transparent);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--atm-accent) 18%, transparent);
+}
+
+.atm__balance-fetch:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.atm__balance-fetch:focus-visible {
+  outline: 2px solid var(--atm-accent);
+  outline-offset: 2px;
+}
+
+.atm__balance-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  align-items: center;
+}
+
+.atm__text-btn {
+  border: none;
+  background: none;
+  padding: 0.2rem 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--atm-accent);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.atm__text-btn:hover:not(:disabled) {
+  color: color-mix(in srgb, var(--atm-accent) 85%, white);
+}
+
+.atm__text-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.atm__text-btn:focus-visible {
+  outline: 2px solid var(--atm-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.atm__actions {
+  display: grid;
+  gap: 1rem;
+}
+
+.atm__action {
+  position: relative;
+  text-align: left;
+  padding: 1.15rem 1.25rem;
+  border-radius: 16px;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background: rgb(18 26 34 / 0.72);
+  color: var(--atm-text);
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.28s ease,
+    box-shadow 0.28s ease;
+  animation: fade-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.atm__action:nth-child(1) {
+  animation-delay: 0.06s;
+}
+.atm__action:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.atm__action:nth-child(3) {
+  animation-delay: 0.18s;
+}
+
+.atm__action:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--atm-accent) 45%, transparent);
+  box-shadow: 0 16px 40px rgb(0 0 0 / 0.4);
+}
+
+.atm__action:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+.atm__action:focus-visible {
+  outline: 2px solid var(--atm-accent);
+  outline-offset: 3px;
+}
+
+.atm__action-glow {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.atm__action--deposit .atm__action-glow {
+  background: radial-gradient(
+    120% 80% at 10% 0%,
+    color-mix(in srgb, var(--atm-accent) 28%, transparent),
+    transparent 55%
+  );
+}
+
+.atm__action--withdraw .atm__action-glow {
+  background: radial-gradient(
+    120% 80% at 90% 0%,
+    color-mix(in srgb, var(--atm-gold) 22%, transparent),
+    transparent 55%
+  );
+}
+
+.atm__action--history .atm__action-glow {
+  background: radial-gradient(
+    120% 80% at 50% 100%,
+    color-mix(in srgb, var(--atm-ice) 20%, transparent),
+    transparent 55%
+  );
+}
+
+.atm__action:hover .atm__action-glow {
+  opacity: 1;
+}
+
+.atm__action-label {
+  display: block;
+  font-family: var(--atm-font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+}
+
+.atm__action-hint {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.82rem;
+  color: var(--atm-muted);
+}
+
+.atm__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(4 8 12 / 0.62);
+  backdrop-filter: blur(6px);
+  z-index: 800;
+  animation: overlay-in 0.3s ease both;
+}
+
+.atm__panel {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 810;
+  width: min(22rem, calc(100vw - 2rem));
+  max-height: min(80vh, 32rem);
+  overflow: auto;
+}
+
+.atm__panel--wide {
+  width: min(28rem, calc(100vw - 2rem));
+}
+
+.atm__panel--enter {
+  animation: panel-pop 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.atm__panel-inner {
+  padding: 1.35rem 1.4rem 1.5rem;
+  border-radius: 18px;
+  background: linear-gradient(155deg, rgb(22 32 42 / 0.96), rgb(14 20 28 / 0.98));
+  border: 1px solid rgb(255 255 255 / 0.1);
+  box-shadow:
+    0 24px 60px rgb(0 0 0 / 0.55),
+    0 0 0 1px rgb(255 255 255 / 0.04) inset;
+}
+
+.atm__panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.atm__panel-title {
+  margin: 0;
+  font-family: var(--atm-font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--atm-text);
+}
+
+.atm__panel-x {
+  border: none;
+  background: rgb(255 255 255 / 0.08);
+  color: var(--atm-text);
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 10px;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.atm__panel-x:hover {
+  background: rgb(255 255 255 / 0.14);
+}
+
+.atm__panel-x:focus-visible {
+  outline: 2px solid var(--atm-accent);
+  outline-offset: 2px;
+}
+
+.atm__panel-desc {
+  margin: 0 0 1rem;
+  font-size: 0.88rem;
+  color: var(--atm-muted);
+  line-height: 1.45;
+}
+
+.atm__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.15rem;
+}
+
+.atm__field-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--atm-muted);
+}
+
+.atm__input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  background: rgb(8 12 18 / 0.65);
+  color: var(--atm-text);
+  font-size: 1.05rem;
+  font-family: inherit;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.atm__input::placeholder {
+  color: rgb(255 255 255 / 0.25);
+}
+
+.atm__input:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--atm-accent) 55%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--atm-accent) 25%, transparent);
+}
+
+.atm__panel-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.atm__btn {
+  border-radius: 12px;
+  padding: 0.65rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease,
+    background 0.2s ease;
+}
+
+.atm__btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.atm__btn--ghost {
+  background: transparent;
+  color: var(--atm-muted);
+  border-color: rgb(255 255 255 / 0.12);
+}
+
+.atm__btn--ghost:hover:not(:disabled) {
+  color: var(--atm-text);
+  border-color: rgb(255 255 255 / 0.2);
+}
+
+.atm__btn--primary {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--atm-accent) 88%, #0a3d2e),
+    color-mix(in srgb, var(--atm-accent) 55%, #06221a)
+  );
+  color: #04120e;
+  border-color: color-mix(in srgb, var(--atm-accent) 40%, transparent);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--atm-accent) 28%, transparent);
+}
+
+.atm__btn--primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.atm__empty {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--atm-muted);
+  line-height: 1.5;
+}
+
+.atm__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.atm__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 0.15rem 1rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.04);
+  border: 1px solid rgb(255 255 255 / 0.06);
+  animation: row-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.atm__row-type {
+  grid-column: 1;
+  grid-row: 1;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--atm-text);
+  text-transform: capitalize;
+}
+
+.atm__row-amt {
+  grid-column: 2;
+  grid-row: 1;
+  font-family: var(--atm-font-display);
+  font-weight: 600;
+  color: var(--atm-gold);
+  font-size: 0.95rem;
+}
+
+.atm__row-time {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  font-size: 0.75rem;
+  color: var(--atm-muted);
+}
+
+@keyframes fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes panel-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
